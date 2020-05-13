@@ -6,7 +6,7 @@ google.charts.load('current', {
 });
 google.charts.setOnLoadCallback(drawRegionsMap);
 
-function drawRegionsMap() {
+function drawRegionsMap(data_table) {
   var data = google.visualization.arrayToDataTable([
     ['Country', 'Popularity'],
     ['Germany', 200],
@@ -14,7 +14,8 @@ function drawRegionsMap() {
     ['Brazil', 400],
     ['Canada', 500],
     ['France', 600],
-    ['RU', 700]
+    ['RU', 700],
+    ['France', 1000]
   ]);
 
   var options = {

@@ -2,7 +2,7 @@ google.charts.load('current', {
   'packages':['geochart'],
   // Note: you will need to get a mapsApiKey for your project.
   // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-  'mapsApiKey': 'AIzaSyB7nmLiSk9Kt0naPZUjuopjYZaH3QiWNHw'
+  'mapsApiKey': 'AIzaSyB7nmLiSk9Kt0naPZUjuopjYZaH3QiWNHw' /* REMEMBER TO RENEW */
 });
 google.charts.setOnLoadCallback(drawRegionsMap);
 

@@ -23,6 +23,7 @@ The URI can be found by right clicking the desired playlist, then `Share` > `Cop
    At the final step, `build_map.js` will convert the country/frequency map to a data table and then fed to `geochart.js` as a parameter to `google.visualization.arrayToDataTable()`. A world map displaying the countries represented in the playlist and number of artists belonging to such country will be beautifully rendered.
 
 ## Built With
++ [Spotipy](https://spotipy.readthedocs.io/en/2.12.0/)
 + [Google GeoChart](https://developers.google.com/chart/interactive/docs/gallery/geochart)
 + [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
 + [Musixmatch API](https://developer.musixmatch.com/)

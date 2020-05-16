@@ -1,0 +1,61 @@
+/* styles */
+/* :root {
+  background: rgb(133, 94, 133);
+} */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 5vh 5vw;
+}
+
+p {
+  max-width: 700px;
+}
+
+input {
+  width: 250px;
+  margin-bottom: 10px;
+}
+
+footer {
+  margin-top: 50px;
+  padding-top: 25px;
+  border-top: 1px solid lightgrey;
+}
+
+footer > a {
+  color: #BBBBBB;
+}
+
+#results {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 30vh;
+}
+
+@media screen and (max-width: 900px) {
+  #results {
+    display: inline-block;
+    max-height: auto;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  #results {
+    max-height: 15vh;
+  }
+}
+
+#login, #loggedin {
+  display: none;
+}
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 500px;
+}

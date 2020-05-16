@@ -12,3 +12,6 @@ musixmatch/__pycache__/client.cpython-36.pyc
 musixmatch/__pycache__/config.cpython-36.pyc
 musixmatch/__pycache__/expections.cpython-36.pyc
 musixmatch/__pycache__/models.cpython-36.pyc
+*.pyc
+public/map/spotify_logo
+unused

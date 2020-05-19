@@ -1,9 +1,4 @@
-# export SPOTIPY_CLIENT_ID='client_id'
-# export SPOTIPY_CLIENT_SECRET='client_secret'
-# export SPOTIPY_REDIRECT_URI='uri'
-# TO REMOVE: unset <var_name>
-
-import spotipy, time
+import spotipy
 
 def getArtists(items, artDict):
     for item in items:
@@ -17,14 +12,13 @@ def getArtists(items, artDict):
 def getUserArtists(username, token, desired):
     sp = spotipy.Spotify(auth=token)
     playlists = sp.user_playlists(username)
-    # desired = input("Enter your desired playlist name: ")
     artDict = dict()
+    
     for playlist in playlists['items']:
         if playlist['name'] == desired and playlist['owner']['id'] == username:
             results = sp.user_playlist_tracks(user=username, playlist_id=playlist['id'], fields="items,next")
             tracks = results['items']
             getArtists(tracks, artDict)
-            # print(artDict)
             while results['next']:
                 results = sp.next(results)
                 tracks = results['items']

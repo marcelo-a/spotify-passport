@@ -1,4 +1,4 @@
-import sys, os, time
+import sys, os
 from musixmatch.api import Musixmatch
 
 from musixmatch.models import Artist

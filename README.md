@@ -2,27 +2,57 @@
 A simple visualization of your Spotify playlists.
 
 ## Usage
-This repo is currently under construction and is not in a usable state.
+1. Download or clone the repo.
+2. Update personal client\_id, client\_secret, redirect\_uri information in [`sp_app.py`](sp_app.py).
+3. Run `python3 sp_appy.py` and open `localhost:8000` in browser of choice.
+4. Follow the instructions and get to know your listening habits!
 
-### Intended use:
-Simply log in to Spotify and paste in your desired playlist's URI.
-The URI can be found by right clicking the desired playlist, then `Share` > `Copy Spotify URI`.
+### Notes:
+Your Spotify URI can be found by right clicking your account name, then `Share` > `Copy Spotify URI`.
 
-## Desgin Philosophy
-1. **fetch_data.js**
+## Design Philosophy
+1. [sp_app.py](sp_app.py)
 
-   Upon submitting the URI, `fetch_data.js` will build a string in the correct Spotify Web API format.
-   Subsequently, a `GET` request will be sent to Spotify and will return a json file with information on the all songs in the playlist. The program will then build an array of all unique artists in the playlist.
+   This is the Python Flask app which is responsible for handling routes.
+   Upon submitting the URI, [`auth.py`](src/auth.py) will authorize the log in and retrieve a session token.
+   Upon a successful log in, the user will be redirected to the main page, [`main.html`](templates/main.html).
 
-2. **aggregate.js**
+2. [main.py](src/main.py)
 
-   Once a list of artists is compiled, `aggregate.js` will interate over each artist and send a `GET` request to Musixmatch which will in turn provide another json file. This file will be parsed for each artist's respective country of origin. This will be stored in a map with `{key, value}` pair defined by `{country, frequency}`.
+   This file acts as the driver for retrieving and returning all playlist, track, and artist information.
 
-3. **build_map.js**
+   >_Requires_: Valid username, playlist name, and access tokens.
+   >
+   >_Effects_: Returns a dictionary with `{key, value}` pair defined by `{country, artist_frequency}`.
+   
+3. [auth.py](src/auth.py)
 
-   At the final step, `build_map.js` will convert the country/frequency map to a data table and then fed to `geochart.js` as a parameter to `google.visualization.arrayToDataTable()`. A world map displaying the countries represented in the playlist and number of artists belonging to such country will be beautifully rendered.
+   This script authenticates the user and return an access token for the session.
+
+   > _Requires_: Environment variable 'user'.
+   >
+   > _Effects_: Returns valid access token.
+
+4. [fetchSpotify.py](src/fetchSpotify.py)
+
+   This script fetches the artists in the desired playlist from Spotify's web API.
+
+   > _Requires_: Valid username, access token, and desired playlist name.
+   >
+   > _Effects_: Returns a sorted dictionary with `{key, value}` pair defined by `{artist, artist_frequency}`.
+
+5. [fetchCountry.py](src/fetchCountry.py)
+
+   This script searches for artist nationality information from Musixmatch's web API.
+
+   >_Requires_: Valid artist name.
+   >
+   > _Effects_:  Returns top search result's country information. Calls `sys.exit()` if artist_name is null.
+
 
 ## Built With
-+ [Google GeoChart](https://developers.google.com/chart/interactive/docs/gallery/geochart)
++ [Spotipy](https://spotipy.readthedocs.io/en/2.12.0/)
 + [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
 + [Musixmatch API](https://developer.musixmatch.com/)
++ [yakupadakli's Python wrapper to Musixmatch's API](https://github.com/yakupadakli/python-musixmatch)
++ [Google GeoChart](https://developers.google.com/chart/interactive/docs/gallery/geochart)

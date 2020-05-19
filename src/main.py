@@ -2,15 +2,13 @@ import spotipy
 import spotipy.util as util
 import src.fetchSpotify as spot
 import src.fetchCountry as musix
-import time
+from os import environ
+# import time
 
-def run(username, playlist_name):
-    tic = time.perf_counter()
+def run(username, token, playlist_name):
+    # tic = time.perf_counter()
     if not username or not playlist_name:
-        print("Whoops, need your playlist name!")
-        return 'error!'
-
-    token = util.prompt_for_user_token(username)
+        return 'Whoops, need your username and playlist name!'
 
     if token:
         artistDict = spot.getUserArtists(username, token, playlist_name)
@@ -28,8 +26,8 @@ def run(username, playlist_name):
             else:
                 countryFreq[country] = 1
 
-        toc = time.perf_counter()
-        print("Total runtime: ", toc-tic)
+        # toc = time.perf_counter()
+        # print("Total runtime: ", toc-tic)
         return countryFreq
         # if "unknown" in countryFreq: print("Unknown: {}, total: {}", countryFreq["unknown"], num)
     else:

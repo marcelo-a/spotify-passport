@@ -6,13 +6,12 @@ google.charts.load('current', {
 });
 google.charts.setOnLoadCallback(drawRegionsMap);
 
-function drawRegionsMap(data_table) {
+function drawRegionsMap() {
   var data = google.visualization.arrayToDataTable(countries_array);
 
   var options = {
-    // region: 'IT',
-    // displayMode: 'markers',
-    // sizeAxis: { minValue: 0, maxValue: 300 },
+    // backgroundColor: '#f5f5f5',
+    // backgroundColor: '#FFFAFA',
     colorAxis: {colors: ['white', '#1DB954']}
   };
 

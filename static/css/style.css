@@ -59,3 +59,12 @@ footer > a {
   white-space: nowrap;
   width: 500px;
 }
+
+/* SPINNER STYLE */
+.line-scale > div {
+  background-color: #1db954;
+}
+
+/* #spinner {
+  padding-left: 5vw;
+} */

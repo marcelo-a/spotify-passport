@@ -28,9 +28,14 @@
 
   <body>
     <div class="container">
-      <div id="login">
+      <div>
         <h1> To view your passport, please log in with your Spotify account.</h1>
-        <a href="/login" class="btn btn-primary btn-aubergine">Log in with Spotify</a>
+        <form id="form">
+          <div class="col-md-7">
+            <input type="text" class="form-control col-sm-5" maxlength="100" placeholder="Your Spotify URI">
+          </div>
+          <button type="submit" class="btn btn-primary btn-aubergine">Log in with Spotify</button>
+        </form>
       </div>
     </div>
 
@@ -42,6 +47,7 @@
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script> -->
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://kit.fontawesome.com/bab8a72573.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="static/js/trigger_login.js"></script>
   </body>
 </html>
 

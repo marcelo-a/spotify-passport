@@ -4,14 +4,8 @@ test.js
 src/auth.js
 src/app.js
 auth.js
-src/__pycache__/fetchCountry.cpython-36.pyc
-src/__pycache__/fetchSpotify.cpython-36.pyc
-musixmatch/__pycache__/api.cpython-36.pyc
-musixmatch/__pycache__/artist.cpython-36.pyc
-musixmatch/__pycache__/client.cpython-36.pyc
-musixmatch/__pycache__/config.cpython-36.pyc
-musixmatch/__pycache__/expections.cpython-36.pyc
-musixmatch/__pycache__/models.cpython-36.pyc
 *.pyc
-public/map/spotify_logo
 unused
+sanity.py
+public
+*.pyc

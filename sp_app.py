@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def init():
-    export SPOTIPY_CLIENT_ID='your-spotify-client-id' # input your client id
-    export SPOTIPY_CLIENT_SECRET='your-spotify-client-secret' # input your client secret
-    export SPOTIPY_REDIRECT_URI='your-app-redirect-uri' # input your redirect uri, e.g. localhost:8000/callback
+    environ['SPOTIPY_CLIENT_ID']='your-spotify-client-id' # input your client id
+    environ['SPOTIPY_CLIENT_SECRET']='your-spotify-client-secret' # input your client secret
+    environ['SPOTIPY_REDIRECT_URI']='your-app-redirect-uri' # input your redirect uri, e.g. localhost:8000/callback
     return render_template('login.html')
 
 @app.route('/main')

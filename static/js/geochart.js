@@ -22,7 +22,7 @@ function drawRegionsMap() {
   chart.draw(data, options);
 }
 
-var countries_array = [['Country', 'Frequency'],
+var countries_array = [['Country', 'Number of Artists'],
 ['AF', 0],  // Afghanistan
 ['AX', 0],  // Åland Islands
 ['AL', 0],  // Albania

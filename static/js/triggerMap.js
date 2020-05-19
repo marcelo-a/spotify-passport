@@ -44,6 +44,15 @@ function parseData(data) {
             }
         });
     }
+
+    // display side note
+    if ('unknown' in data) {
+        document.getElementById('sidenote').innerHTML = '\* Unable to find nationality information for ' + data['unknown'] + ' artists.';
+    }
+    else {
+        document.getElementById('sidenote').innerHTML = '';
+    }
+
     drawRegionsMap(data);
 }
   

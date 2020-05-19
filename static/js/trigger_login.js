@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.querySelector('input');
-    document.querySelector('form').addEventListener('submit', function user_login(){
-        const input = document.querySelector('input');
+    
+    document.querySelector('form').addEventListener('submit', function user_login(e){
+        e.preventDefault();
 
         $.ajax({
             type: 'GET',
@@ -14,17 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
             dataType: 'json',
             success: function(response) {
                 console.log(response);
-                // window.location.replace("callback");
-                // handle_success();
+                // redirect to main page
+                location = 'main';
             },
             error: function(request, status, error) {
-                // console.log("Error: " + error);
+                console.log("Error: " + error);
                 alert("Error: " + error);
             }
         });
+
     });
 });
-
-function handle_success() {
-    window.location = 'main';
-}

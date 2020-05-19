@@ -11,7 +11,9 @@ function drawRegionsMap() {
 
   var options = {
     // backgroundColor: '#f5f5f5',
-    // backgroundColor: '#FFFAFA',
+    // enableRegionInteractivity: false,
+    // tooltip: { textStyle: { fontName: 'helvetica', fontSize: 12 } },
+    backgroundColor:'transparent',
     colorAxis: {colors: ['white', '#1DB954']}
   };
 

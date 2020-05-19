@@ -2,11 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.querySelector('input');
     document.querySelector('form').addEventListener('submit', function(event) {
         // on submit, show spinner
-        var spinner = document.getElementById('spinner');
-        spinner.style.display = 'block';
-        // hide form
-        var form = document.getElementById('form');
-        form.style.display = 'none';
+        showSpinner();
 
         // send request
         event.preventDefault();
@@ -18,15 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
             async: 'asynchronous',
             data : {
                 playlist: encodeURIComponent(input.value) // properly encode spaces
-                // playlist: 'BONEYARD'
             },
             dataType: 'json',
             success: function(response) {
                 // update map data
+                console.log(response)
                 parseData(response);
             },
             error: function(request, status, error) {
-                // console.log("Error: " + error)
+                hideSpinner();
+                console.log("Error: " + error)
                 alert("Error " + request.status + ": " + error);
             }
         });
@@ -37,11 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function parseData(data) {
     // on success, hide spinner
-    var spinner = document.getElementById('spinner');
-    var form = document.getElementById('form');
-    spinner.style.display = 'none';
-    form.style.display = 'block';
+    hideSpinner();
 
+    // update map
     for (var key in data) {
         countries_array.forEach( function(pair) {
             if (key == pair[0]) {
@@ -52,3 +47,17 @@ function parseData(data) {
     drawRegionsMap(data);
 }
   
+function showSpinner() {
+    var spinner = document.getElementById('spinner');
+    var form = document.getElementById('trigger');
+    
+    spinner.style.display = 'inline-block';
+    form.style.display = 'none';
+}
+
+function hideSpinner() {
+    var spinner = document.getElementById('spinner');
+    var form = document.getElementById('trigger');
+    spinner.style.display = 'none';
+    form.style.display = 'initial';
+}

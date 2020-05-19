@@ -3,6 +3,7 @@
   <head>
     <title>Authorization Page</title>
     <link href="https://sp-bootstrap.global.ssl.fastly.net/8.0.0/sp-bootstrap.min.css" rel="stylesheet">
+
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style type="text/css">
     :root {
@@ -32,22 +33,24 @@
         <h1> To view your passport, please log in with your Spotify account.</h1>
         <form id="form">
           <div class="col-md-7">
-            <input type="text" class="form-control col-sm-5" maxlength="100" placeholder="Your Spotify URI">
+            <input type="text" class="form-control col-sm-5" maxlength="100" placeholder="Your Spotify account URI">
           </div>
-          <button type="submit" class="btn btn-primary btn-aubergine">Log in with Spotify</button>
+          <button id="btn" type="submit" class="btn btn-primary btn-aubergine">Log in with Spotify</button>
         </form>
       </div>
     </div>
 
-    <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
-      <i class="fas fa-passport" style="font-size:88px; float:left; color:#762d53"></i>
-    </a>
+    <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
+      <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
+        <i class="fab fa-github fa-8x" style="float:left; color: white"></i>
+      </a>
+    </div>
 
     <!-- Your web-app is https, so your scripts need to be too -->
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script> -->
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://kit.fontawesome.com/bab8a72573.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="static/js/trigger_login.js"></script>
+    <script type="text/javascript" src="../static/js/trigger_login.js"></script>
   </body>
 </html>
 

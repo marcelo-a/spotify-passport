@@ -1,6 +1,3 @@
-<!-- This is a static file -->
-<!-- served from your routes in server.js -->
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -21,44 +18,58 @@
         Spotify Passport
       </h1>
       <p>
-        Learn more about the origin of your favourite tracks and explore different cultures.
+        Learn more about the origin of your favourite artists and explore different cultures.
       </p>
       <p>
-        To get these values, we use the Spotify API's <a href="https://developer.spotify.com/web-api/get-audio-features/">Get Stats for a Playlist</a> endpoint.
+        To get these values, I use the Spotify API's <a href="https://developer.spotify.com/documentation/web-api/reference/playlists/get-playlists-tracks/">Get a Playlist's Items</a> and <a href='https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/'>Get a Track</a> endpoints.
+      </p>
+      <p>
+        Artist nationality information is retrieved with the use of Musixmatch API's <a href="https://developer.musixmatch.com/documentation/api-reference/artist-search">artist.search</a> endpoint.
       </p>
     </header>
 
     <main>
+      <div>
         <h4>Let's search for a playlist:</h4>
         <form id="form">
-          <input type="text" maxlength="100" placeholder="Playlist name">
+          <input type="text" maxlength="35" placeholder="Playlist name">
           <button id="trigger" class="btn btn-sm btn-aubergine" type="submit">Submit</button>
+          <div id="spinner" class="line-scale loader-inner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </form>
-        <div id="spinner" class="line-scale loader-inner" style="display: none;">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
+      </div>
 
+      <div style="position: fixed; right: 7%;">
         <section class="features">
           <ul id="results">
-            <script src="static/js/geochart.js"></script>
+            <script src="../static/js/geochart.js"></script>
           </ul>
         </section>
-        <div id="regions_div" style="width: 900px; height: 500px;"></div>
+        <div id="regions_div" style="width: 900px; height: 550px;"></div>
+      </div>
     </main>
+
+    <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
+      <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
+        <i class="fab fa-github fa-2x" style="float:left; color:#762d53"></i>
+      </a>
+    </div>
 
     <!-- Your web-app is https, so your scripts need to be too -->
     <!-- Won't show up for user -->
-    <link rel="stylesheet" href="static/css/style.css">
-    <link rel="stylesheet" href="static/css/loader.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/loader.min.css">
+    <script src="https://kit.fontawesome.com/bab8a72573.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"
             integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"></script>
-    <script type="text/javascript" src="static/js/triggerMap.js"></script>
+    <script type="text/javascript" src="../static/js/triggerMap.js"></script>
 
   </body>
 

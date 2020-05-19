@@ -1,14 +1,19 @@
-/* styles */
-/* :root {
-  background: rgb(133, 94, 133);
-} */
-
 * {
   box-sizing: border-box;
 }
 
 body {
   padding: 5vh 5vw;
+  background: url('../img/main_background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: fixed;
+}
+
+main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 p {
@@ -18,6 +23,12 @@ p {
 input {
   width: 250px;
   margin-bottom: 10px;
+  padding: 5px 5px;
+}
+
+input[type=text]:focus {
+  border: 3px solid #762d53;
+  outline: none;
 }
 
 footer {
@@ -31,9 +42,7 @@ footer > a {
 }
 
 #results {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
+  position: fixed;
   max-height: 30vh;
 }
 
@@ -50,9 +59,6 @@ footer > a {
   }
 }
 
-#login, #loggedin {
-  display: none;
-}
 .text-overflow {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -61,10 +67,12 @@ footer > a {
 }
 
 /* SPINNER STYLE */
+#spinner {
+  display: none;
+  margin-left: 50px;
+  vertical-align: -70%;
+}
+
 .line-scale > div {
   background-color: #1db954;
 }
-
-/* #spinner {
-  padding-left: 5vw;
-} */

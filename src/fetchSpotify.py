@@ -3,7 +3,6 @@ import spotipy
 def getArtists(items, artDict):
     for item in items:
         artist_name = item['track']['artists'][0]['name']
-        # print(item['track']['name'])
         if artist_name in artDict:
             artDict[artist_name] += 1
         else:

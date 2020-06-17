@@ -5,9 +5,11 @@ use actix_web::http::header;
 use actix_web::{web, App, HttpResponse, HttpServer};
 use oauth2::basic::BasicClient;
 use oauth2::{
-    AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge, RedirectUrl,
-    Scope, TokenUrl,
+    AuthUrl, AuthorizationCode, ClientId,
+    ClientSecret, CsrfToken, PkceCodeChallenge,
+    RedirectUrl, Scope, TokenUrl,
 };
+use oauth2::reqwest::http_client;
 
 struct AppState {
     oauth: BasicClient,
@@ -34,7 +36,7 @@ fn index(session: Session) -> HttpResponse {
 }
 
 fn login(data: web::Data<AppState>) -> HttpResponse {
-    // Google supports Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
+    // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
     // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
     let (pkce_code_challenge, _pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
 
@@ -42,7 +44,7 @@ fn login(data: web::Data<AppState>) -> HttpResponse {
     let (authorize_url, _csrf_state) = &data
         .oauth
         .authorize_url(CsrfToken::new_random)
-        // This example is requesting access to the "calendar" features and the user's profile.
+        // Requesting read access to user's private playlists.
         .add_scope(Scope::new(
             "playlist-read-private".to_string(),
         ))
@@ -70,15 +72,17 @@ pub struct AuthRequest {
 fn auth(
     session: Session,
     data: web::Data<AppState>,
-    params: web::Query<AuthRequest>,
+    res: web::Query<AuthRequest>, // deserialize URL query into struct
 ) -> HttpResponse {
-    let code = AuthorizationCode::new(params.code.clone());
-    let state = CsrfToken::new(params.state.clone());
-    // let _scope = params.scope.clone();
+    let code = AuthorizationCode::new(res.code.clone());
+    let state = CsrfToken::new(res.state.clone());
 
     // Exchange the code with a token.
-    // let token = &data.oauth.exchange_code(code);
-    let token = &params.code;
+    // let token = &data.oauth.exchange_code(code)
+    //                 // Set the PKCE code verifier.
+    //                 .set_pkce_verifier(pkce_verifier)
+    //                 .request(http_client)?;
+    let token = &res.code;
 
     session.set("login", true).unwrap();
 
@@ -98,39 +102,48 @@ fn auth(
     HttpResponse::Ok().body(html)
 }
 
-fn setEnv() {
-    
+fn prompt_for_authentication() -> BasicClient {
+    // Retrieve environment variables
+    let spotify_client_id = ClientId::new(
+        env::var("SPOTIFY_CLIENT_ID")
+            .expect("Missing the CLIENT_ID environment variable."),
+    );
+    let spotify_client_secret = ClientSecret::new(
+        env::var("SPOTIFY_CLIENT_SECRET")
+            .expect("Missing the SPOTIFY_CLIENT_SECRET environment variable."),
+    );
+    let auth_url = AuthUrl::new("https://accounts.spotify.com/authorize".to_string())
+        .expect("Invalid authorization endpoint URL");
+    let token_url = TokenUrl::new("https://accounts.spotify.com/api/token".to_string())
+        .expect("Invalid token endpoint URL");
+
+    // Set up the config for the Spotify OAuth2 process.
+    let client = BasicClient::new(
+        spotify_client_id,
+        Some(spotify_client_secret),
+        auth_url,
+        Some(token_url),
+    )
+    .set_redirect_url(
+        RedirectUrl::new("http://localhost:8888/callback".to_string())
+            .expect("Invalid redirect URL"),
+    );
+
+    client
+}
+
+fn setEnv(client_id: String, client_secret: String, redirect_uri: String) {
+    env::set_var("SPOTIFY_CLIENT_ID", client_id);
+    env::set_var("SPOTIFY_CLIENT_SECRET", client_secret);
+    env::set_var("SPOTIFY_REDIRECT_URI", redirect_uri);
 }
 
 #[actix_rt::main]
 async fn main() {
-    setEnv();
+    
 
     HttpServer::new(|| {
-        let google_client_id = ClientId::new(
-            env::var("SPOTIFY_CLIENT_ID")
-                .expect("Missing the CLIENT_ID environment variable."),
-        );
-        let google_client_secret = ClientSecret::new(
-            env::var("SPOTIFY_CLIENT_SECRET")
-                .expect("Missing the SPOTIFY_CLIENT_SECRET environment variable."),
-        );
-        let auth_url = AuthUrl::new("https://accounts.spotify.com/authorize".to_string())
-            .expect("Invalid authorization endpoint URL");
-        let token_url = TokenUrl::new("https://accounts.spotify.com/api/token".to_string())
-            .expect("Invalid token endpoint URL");
-
-        // Set up the config for the Google OAuth2 process.
-        let client = BasicClient::new(
-            google_client_id,
-            Some(google_client_secret),
-            auth_url,
-            Some(token_url),
-        )
-        .set_redirect_url(
-            RedirectUrl::new("http://localhost:8888/callback".to_string())
-                .expect("Invalid redirect URL"),
-        );
+        let client : BasicClient = prompt_for_authentication();
 
         App::new()
             .data(AppState { oauth: client })

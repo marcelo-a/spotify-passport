@@ -24,7 +24,9 @@ async fn main() {
     user::setEnv("SPOTIFY_CLIENT_ID".to_string(),
             "SPOTIFY_CLIENT_SECRET".to_string(),
             "SPOTIFY_REDIRECT_URI".to_string());
-
+    user::setEnv("c5517cce8fb5475ea4262ccc38957e9d".to_string(),
+            "75003164eb8c4a2f8300456f2cbfaf75".to_string(),
+            "http://localhost:8888/callback".to_string());
     HttpServer::new(|| {
         let client : BasicClient = user::prompt_for_authentication();
         let state = user::AppState::new(client);

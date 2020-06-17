@@ -1,0 +1,23 @@
+[package]
+name = "actix"
+version = "0.1.0"
+authors = ["Marcelo Almeida <mgba@umich.edu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "2.0"
+actix-rt = "1.0"
+actix-session = "0.3.0"
+# serde_derive = "1.0.112"
+serde = { version = "1.0.112", features = ["derive"] }
+oauth2 = "3.0"
+
+[[example]]
+name = "oauth"
+path = "src/oauth/example.rs"
+
+[[example]]
+name = "test"
+path = "src/oauth/auth.rs"

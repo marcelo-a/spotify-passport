@@ -1,0 +1,1 @@
+GET https://accounts.spotify.com/authorize

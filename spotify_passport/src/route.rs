@@ -4,20 +4,14 @@ use actix_web::{web, App, HttpResponse, HttpRequest, Responder};
 use actix_web::http::{StatusCode};
 // #[macro_use] extern crate serde_derive;
 
-
-pub async fn login() -> Result<HttpResponse, ()> {
-    // response
-    Ok(HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../templates/login.html")))
-}
-
 pub async fn default() -> impl Responder {
     // env::set_var("SPOTIFY_CLIENT_ID", "your-spotify-client-id");
     // env::set_var("SPOTIFY_CLIENT_SECRET", "your-spotify-client-secret");
     // env::set_var("SPOTIFY_REDIRECT_URI", "your-app-redirect-uri");
 
-    HttpResponse::Ok().body("Hello world!")
+    HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../templates/login.html"))
 }
 
 pub async fn render() -> impl Responder {

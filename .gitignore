@@ -1,4 +1,5 @@
 ﻿unused
 .cache-1289838511
 *.pyc
-actix/target
+spotify_passport/target
+spotify_passport/src/sp_oauth/example.rs

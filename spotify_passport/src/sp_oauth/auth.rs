@@ -1,21 +1,29 @@
 use std::env;
 use serde::Deserialize;
-use actix_session::{CookieSession, Session};
+use actix_session::Session;
 use actix_web::http::header;
-use actix_web::{web, App, HttpResponse, HttpServer};
-use oauth2::basic::BasicClient;
+use actix_web::{web, App, HttpResponse};
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId,
     ClientSecret, CsrfToken, PkceCodeChallenge,
     RedirectUrl, Scope, TokenUrl,
 };
+use oauth2::basic::BasicClient;
 use oauth2::reqwest::http_client;
 
-struct AppState {
+pub struct AppState {
     oauth: BasicClient,
 }
 
-fn index(session: Session) -> HttpResponse {
+impl AppState {
+    pub fn new(param: BasicClient) -> AppState {
+        AppState {
+            oauth: param,
+        }
+    }
+}
+
+pub async fn index(session: Session) -> HttpResponse {
     let link = if let Some(_login) = session.get::<bool>("login").unwrap() {
         "logout"
     } else {
@@ -35,7 +43,7 @@ fn index(session: Session) -> HttpResponse {
     HttpResponse::Ok().body(html)
 }
 
-fn login(data: web::Data<AppState>) -> HttpResponse {
+pub async fn login(data: web::Data<AppState>) -> HttpResponse {
     // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
     // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
     let (pkce_code_challenge, _pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
@@ -56,7 +64,7 @@ fn login(data: web::Data<AppState>) -> HttpResponse {
         .finish()
 }
 
-fn logout(session: Session) -> HttpResponse {
+pub async fn logout(session: Session) -> HttpResponse {
     session.remove("login");
     HttpResponse::Found()
         .header(header::LOCATION, "/".to_string())
@@ -69,7 +77,7 @@ pub struct AuthRequest {
     state: String,
 }
 
-fn auth(
+pub async fn auth(
     session: Session,
     data: web::Data<AppState>,
     res: web::Query<AuthRequest>, // deserialize URL query into struct
@@ -102,7 +110,7 @@ fn auth(
     HttpResponse::Ok().body(html)
 }
 
-fn prompt_for_authentication() -> BasicClient {
+pub fn prompt_for_authentication() -> BasicClient {
     // Retrieve environment variables
     let spotify_client_id = ClientId::new(
         env::var("SPOTIFY_CLIENT_ID")
@@ -132,30 +140,8 @@ fn prompt_for_authentication() -> BasicClient {
     client
 }
 
-fn setEnv(client_id: String, client_secret: String, redirect_uri: String) {
+pub fn setEnv(client_id: String, client_secret: String, redirect_uri: String) {
     env::set_var("SPOTIFY_CLIENT_ID", client_id);
     env::set_var("SPOTIFY_CLIENT_SECRET", client_secret);
     env::set_var("SPOTIFY_REDIRECT_URI", redirect_uri);
-}
-
-#[actix_rt::main]
-async fn main() {
-    
-
-    HttpServer::new(|| {
-        let client : BasicClient = prompt_for_authentication();
-
-        App::new()
-            .data(AppState { oauth: client })
-            .wrap(CookieSession::signed(&[0; 32]).secure(false))
-            .route("/", web::get().to(index))
-            .route("/login", web::get().to(login))
-            .route("/logout", web::get().to(logout))
-            .route("/callback", web::get().to(auth))
-    })
-    .bind("127.0.0.1:8888")
-    .expect("Can not bind to port 8888")
-    .run()
-    .await
-    .unwrap();
 }

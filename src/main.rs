@@ -1,6 +1,7 @@
 // #![allow(unused_imports)]
 use actix_web::{web, App, HttpServer};
-use actix_session::{CookieSession, Session};
+use actix_session::CookieSession;
+use actix_files::Files as fs;
 use oauth2::basic::BasicClient;
 // use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use spotify_lib::sp_oauth::auth as user;
@@ -21,12 +22,10 @@ mod route;
 #[actix_rt::main]
 async fn main() {
     // REPLACE FIELDS WITH YOUR INFO
-    user::setEnv("SPOTIFY_CLIENT_ID".to_string(),
+    user::set_env("SPOTIFY_CLIENT_ID".to_string(),
             "SPOTIFY_CLIENT_SECRET".to_string(),
             "SPOTIFY_REDIRECT_URI".to_string());
-    user::setEnv("c5517cce8fb5475ea4262ccc38957e9d".to_string(),
-            "75003164eb8c4a2f8300456f2cbfaf75".to_string(),
-            "http://localhost:8888/callback".to_string());
+
     HttpServer::new(|| {
         let client : BasicClient = user::prompt_for_authentication();
         let state = user::AppState::new(client);
@@ -34,14 +33,20 @@ async fn main() {
         App::new()
             .data(state)
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
+        // serve static files
+            .service(
+                fs::new("/static", "../static").show_files_listing()
+            )
             .route("/", web::get().to(route::default))
-            // .route("/", web::get().to(user::index))
+        //     .route("/", web::get().to(user::index))
             // authorization
             .route("/login", web::get().to(user::login))
             .route("/logout", web::get().to(user::logout))
             .route("/callback", web::get().to(user::auth))
+        //     .route("/callback", web::get().to(route::render_main))
             // test
-            .route("/render", web::get().to(route::render))
+            .route("/status", web::get().to(user::login_status))
+            .route("/main", web::get().to(route::render_main))
             .route("/again", web::get().to(route::again))
             // drivers
             .route("/run", web::get().to(route::run))

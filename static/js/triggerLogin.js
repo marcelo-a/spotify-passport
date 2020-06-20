@@ -3,16 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.querySelector('form').addEventListener('submit', function user_login(e){
         e.preventDefault();
-
+        
         $.ajax({
             type: 'GET',
             url: '/login',
             cache: false,
             async: 'asynchronous',
-            data : {
-                username: encodeURIComponent(input.value) // properly encode spaces
-            },
-            dataType: 'json',
             success: function(response) {
                 console.log(response);
                 // redirect to main page

@@ -11,11 +11,13 @@ pub async fn default() -> impl Responder {
 
     HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
-        .body(include_str!("../templates/login.html"))
+        .body(include_str!("../templates/index.html"))
 }
 
-pub async fn render() -> impl Responder {
-    HttpResponse::Ok().body("render!")
+pub async fn render_main() -> impl Responder {
+    HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../templates/main.html"))
 }
 
 pub async fn again() -> impl Responder {

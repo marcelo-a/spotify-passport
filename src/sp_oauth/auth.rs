@@ -1,15 +1,16 @@
+#![allow(unused_variables)]
 use std::env;
 use serde::Deserialize;
 use actix_session::Session;
 use actix_web::http::header;
-use actix_web::{web, App, HttpResponse};
+use actix_web::{web, HttpResponse};
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId,
     ClientSecret, CsrfToken, PkceCodeChallenge,
     RedirectUrl, Scope, TokenUrl,
 };
 use oauth2::basic::BasicClient;
-use oauth2::reqwest::http_client;
+// use oauth2::reqwest::http_client;
 
 pub struct AppState {
     oauth: BasicClient,
@@ -23,12 +24,24 @@ impl AppState {
     }
 }
 
-pub async fn index(session: Session) -> HttpResponse {
+pub async fn login_status(session: Session) -> HttpResponse {
     let link = if let Some(_login) = session.get::<bool>("login").unwrap() {
         "logout"
     } else {
         "login"
     };
+
+    match session.get::<String>("token") {
+        Ok(res) => {
+            if let Some(token) = res {
+                println!("session token: {}", token);
+            }
+            else {
+                println!("No session token!");
+            }
+        },
+        Err(e) => println!("Error, cannot get session token: {:?}", e),
+    }
 
     let html = format!(
         r#"<html>
@@ -59,8 +72,12 @@ pub async fn login(data: web::Data<AppState>) -> HttpResponse {
         .set_pkce_challenge(pkce_code_challenge)
         .url();
 
-    HttpResponse::Found()
-        .header(header::LOCATION, authorize_url.to_string())
+    // HttpResponse::Found()
+    //     .header(header::LOCATION, authorize_url.to_string())
+    //     .finish()
+
+    HttpResponse::Ok()
+        // .header(header::LOCATION, authorize_url.to_string())
         .finish()
 }
 
@@ -91,6 +108,7 @@ pub async fn auth(
     //                 .set_pkce_verifier(pkce_verifier)
     //                 .request(http_client)?;
     let token = &res.code;
+    session.set("token", token).unwrap();
 
     session.set("login", true).unwrap();
 
@@ -140,7 +158,7 @@ pub fn prompt_for_authentication() -> BasicClient {
     client
 }
 
-pub fn setEnv(client_id: String, client_secret: String, redirect_uri: String) {
+pub fn set_env(client_id: String, client_secret: String, redirect_uri: String) {
     env::set_var("SPOTIFY_CLIENT_ID", client_id);
     env::set_var("SPOTIFY_CLIENT_SECRET", client_secret);
     env::set_var("SPOTIFY_REDIRECT_URI", redirect_uri);

@@ -46,7 +46,7 @@ async fn main() {
         //     .route("/callback", web::get().to(route::render_main))
             // test
             .route("/status", web::get().to(user::login_status))
-            .route("/main", web::get().to(route::render_main))
+            .route("/home", web::get().to(route::render_main))
             .route("/again", web::get().to(route::again))
             // drivers
             .route("/run", web::get().to(route::run))

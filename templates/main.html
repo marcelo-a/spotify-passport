@@ -28,6 +28,7 @@
     </header>
 
     <main>
+      <!-- form -->
       <div>
         <h4>Let's search for a playlist:</h4>
         <form id="form">
@@ -41,12 +42,9 @@
             <div></div>
           </div>
         </form>
-
-        <form id="form">
-          <button id="btn" type="submit" class="btn btn-primary btn-aubergine">Logout</button>
-        </form>
       </div>
 
+      <!-- map -->
       <div style="position: fixed; right: 7%;">
           <ul id="results">
             <script src="../static/js/geochart.js"></script>
@@ -54,8 +52,16 @@
         <div id="regions_div" style="width: 900px; height: 550px;"></div>
         <p id="sidenote" style="font-size: 10px; position: fixed; right: 15%;"></p>
       </div>
+
+      <!-- logout -->
+      <div style="position: fixed; right: 0px; bottom: 10px;">
+        <a href="logout" class="logout btn btn-md" role="link">
+          <span class="glyphicon glyphicon-log-out"></span> Log out
+        </a>
+      </div>
     </main>
 
+    <!-- github link -->
     <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
       <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
         <i class="fab fa-github fa-2x" style="float:left; color:#762d53"></i>

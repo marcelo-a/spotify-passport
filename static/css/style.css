@@ -76,3 +76,10 @@ footer > a {
 .line-scale > div {
   background-color: #1db954;
 }
+
+.logout {
+  color: #696969;
+}
+.logout:hover {
+  color: #404040;
+}

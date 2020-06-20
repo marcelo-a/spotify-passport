@@ -1,28 +1,18 @@
-#![allow(unused_variables)]
+// #![allow(unused_variables)]
 use std::env;
 use serde::Deserialize;
 use actix_session::Session;
 use actix_web::http::header;
 use actix_web::{web, HttpResponse};
 use oauth2::{
-    AuthUrl, AuthorizationCode, ClientId,
+    AuthUrl, /*AuthorizationCode,*/ ClientId,
     ClientSecret, CsrfToken, PkceCodeChallenge,
     RedirectUrl, Scope, TokenUrl,
 };
 use oauth2::basic::BasicClient;
-// use oauth2::reqwest::http_client;
 
-pub struct AppState {
-    oauth: BasicClient,
-}
-
-impl AppState {
-    pub fn new(param: BasicClient) -> AppState {
-        AppState {
-            oauth: param,
-        }
-    }
-}
+// other directories
+use crate::spotify::user::{Passport};
 
 pub async fn login_status(session: Session) -> HttpResponse {
     let link = if let Some(_login) = session.get::<bool>("login").unwrap() {
@@ -56,12 +46,21 @@ pub async fn login_status(session: Session) -> HttpResponse {
     HttpResponse::Ok().body(html)
 }
 
-pub async fn login(session: Session, data: web::Data<AppState>) -> HttpResponse {
+pub async fn login(session: Session, data: web::Data<Passport>) -> HttpResponse {
     // if already logged in, skip authorization
     if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
-        HttpResponse::Found()
-            .header(header::LOCATION, "home")
-            .finish()
+        if let Some(temp) = session.get::<String>("token").unwrap() {
+            env::set_var("token", &temp);
+            println!("{}", temp);
+            HttpResponse::Found()
+                .header(header::LOCATION, "home")
+                .finish()
+        }
+        else {
+            HttpResponse::Found()
+                .header(header::LOCATION, "/")
+                .finish()
+        }
     } else {
         // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
         // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
@@ -69,11 +68,14 @@ pub async fn login(session: Session, data: web::Data<AppState>) -> HttpResponse 
 
         // Generate the authorization URL to which we'll redirect the user.
         let (authorize_url, _csrf_state) = &data
-            .oauth
+            .oauth()
             .authorize_url(CsrfToken::new_random)
             // Requesting read access to user's private playlists.
             .add_scope(Scope::new(
                 "playlist-read-private".to_string(),
+            ))
+            .add_scope(Scope::new(
+                "user-read-private".to_string(),
             ))
             .set_pkce_challenge(pkce_code_challenge)
             .url();
@@ -106,42 +108,39 @@ pub async fn logout(session: Session) -> HttpResponse {
 #[derive(Deserialize)]
 pub struct AuthRequest {
     code: String,
-    state: String,
+    // state: String,
 }
 
 pub async fn auth(
     session: Session,
-    data: web::Data<AppState>,
+    // _data: web::Data<AppState>,
     res: web::Query<AuthRequest>, // deserialize URL query into struct
 ) -> HttpResponse {
-    let code = AuthorizationCode::new(res.code.clone());
-    let state = CsrfToken::new(res.state.clone());
-
-    // let token = &data.oauth.exchange_code(code)
+    // let _code = AuthorizationCode::new(res.code.clone());
+    // let _state = CsrfToken::new(res.state.clone());
+    
+    // TODO: look into pkce verifier
+    // Exchange the code with a token.
+    // let token = &data.oauth
+    //                 .exchange_code(code)
     //                 // Set the PKCE code verifier.
     //                 .set_pkce_verifier(pkce_verifier)
     //                 .request(http_client)?;
+    //                 // .expect("exchange_code failed");
+    // let token = token.access_token();
+    // let html = format!(
+    //     r#"{:?}"#,
+    //     token
+    // );
+    // println!("{}", html);
     
-    // Exchange the code with a token.
     // save session token
     let token = &res.code;
     session.set("token", token).unwrap();
+    env::set_var("token", token);
+    println!("{}", token);
 
     session.set("login", true).unwrap();
-
-    // let html = format!(
-    //     r#"<html>
-    //     <head><title>OAuth2 Test</title></head>
-    //     <body>
-    //         Spotify returned the following state:
-    //         <pre>{}</pre>
-    //         Spotify returned the following token:
-    //         <pre>{:?}</pre>
-    //     </body>
-    // </html>"#,
-    //     state.secret(),
-    //     token
-    // );
 
     // redirect to /main
     HttpResponse::Found()
@@ -183,8 +182,9 @@ pub fn prompt_for_authentication() -> BasicClient {
     client
 }
 
-pub fn set_env(client_id: String, client_secret: String, redirect_uri: String) {
+pub fn set_env(client_id: String, client_secret: String, redirect_uri: String, musix_key: String) {
     env::set_var("SPOTIFY_CLIENT_ID", client_id);
     env::set_var("SPOTIFY_CLIENT_SECRET", client_secret);
     env::set_var("SPOTIFY_REDIRECT_URI", redirect_uri);
+    env::set_var("MUSIXMATCH_API_KEY", musix_key);
 }

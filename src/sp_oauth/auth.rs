@@ -5,11 +5,13 @@ use actix_session::Session;
 use actix_web::http::header;
 use actix_web::{web, HttpResponse};
 use oauth2::{
-    AuthUrl, /*AuthorizationCode,*/ ClientId,
+    AuthUrl, AuthorizationCode, ClientId,
     ClientSecret, CsrfToken, PkceCodeChallenge,
-    RedirectUrl, Scope, TokenUrl,
+    RedirectUrl, Scope, TokenUrl, PkceCodeVerifier
 };
 use oauth2::basic::BasicClient;
+use oauth2::reqwest::http_client;
+use oauth2::TokenResponse;
 
 // other directories
 use crate::spotify::user::{Passport};
@@ -46,12 +48,11 @@ pub async fn login_status(session: Session) -> HttpResponse {
     HttpResponse::Ok().body(html)
 }
 
-pub async fn login(session: Session, data: web::Data<Passport>) -> HttpResponse {
+pub async fn prompt_for_authentication(session: Session, data: web::Data<Passport>) -> HttpResponse {
     // if already logged in, skip authorization
     if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
         if let Some(temp) = session.get::<String>("token").unwrap() {
-            env::set_var("token", &temp);
-            println!("{}", temp);
+            // env::set_var("token", &temp);
             HttpResponse::Found()
                 .header(header::LOCATION, "home")
                 .finish()
@@ -64,7 +65,9 @@ pub async fn login(session: Session, data: web::Data<Passport>) -> HttpResponse 
     } else {
         // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
         // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
-        let (pkce_code_challenge, _pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+        let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+        // data.set_pkce(pkce_code_verifier);
+        env::set_var("pkce_verifier", pkce_code_verifier.secret());
 
         // Generate the authorization URL to which we'll redirect the user.
         let (authorize_url, _csrf_state) = &data
@@ -74,11 +77,12 @@ pub async fn login(session: Session, data: web::Data<Passport>) -> HttpResponse 
             .add_scope(Scope::new(
                 "playlist-read-private".to_string(),
             ))
-            .add_scope(Scope::new(
-                "user-read-private".to_string(),
-            ))
+            // .add_scope(Scope::new(
+            //     "user-read-private".to_string(),
+            // ))
             .set_pkce_challenge(pkce_code_challenge)
             .url();
+        println!("{}", authorize_url);
 
         HttpResponse::Found()
             .header(header::LOCATION, authorize_url.to_string())
@@ -87,18 +91,6 @@ pub async fn login(session: Session, data: web::Data<Passport>) -> HttpResponse 
 }
 
 pub async fn logout(session: Session) -> HttpResponse {
-    // match session.get::<String>("token") {
-    //     Ok(res) => {
-    //         if let Some(token) = res {
-    //             println!("session token: {}", token);
-    //         }
-    //         else {
-    //             println!("No session token!");
-    //         }
-    //     },
-    //     Err(e) => println!("Error, cannot get session token: {:?}", e),
-    // }
-
     session.remove("login");
     HttpResponse::Found()
         .header(header::LOCATION, "/".to_string())
@@ -106,14 +98,15 @@ pub async fn logout(session: Session) -> HttpResponse {
 }
 
 #[derive(Deserialize)]
+#[derive(Debug)]
 pub struct AuthRequest {
     code: String,
-    // state: String,
+    state: String,
 }
 
 pub async fn auth(
     session: Session,
-    // _data: web::Data<AppState>,
+    data: web::Data<Passport>,
     res: web::Query<AuthRequest>, // deserialize URL query into struct
 ) -> HttpResponse {
     // let _code = AuthorizationCode::new(res.code.clone());
@@ -133,12 +126,21 @@ pub async fn auth(
     //     token
     // );
     // println!("{}", html);
+    // let response = format!("{:?}", res);
     
     // save session token
-    let token = &res.code;
+    let pkce_verifier = env::var("pkce_verifier").unwrap();
+    let auth_code = res.code.to_string();
+    let token_response = &data.oauth()
+                    .exchange_code(AuthorizationCode::new(auth_code))
+                    .set_pkce_verifier(PkceCodeVerifier::new(pkce_verifier))
+                    .request(http_client)
+                    .expect("token request failed");
+    
+    let token = token_response.access_token().secret();
+    // let temp = token.access_token();
     session.set("token", token).unwrap();
     env::set_var("token", token);
-    println!("{}", token);
 
     session.set("login", true).unwrap();
 
@@ -148,7 +150,7 @@ pub async fn auth(
         .finish()
 }
 
-pub fn prompt_for_authentication() -> BasicClient {
+pub fn create_client() -> BasicClient {
     // Retrieve environment variables
     let spotify_client_id = ClientId::new(
         env::var("SPOTIFY_CLIENT_ID")

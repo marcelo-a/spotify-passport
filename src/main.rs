@@ -16,7 +16,7 @@ async fn main() {
             "MUSIXMATCH_API_KEY".to_string());
 
     HttpServer::new(|| {
-        let client : BasicClient = auth::prompt_for_authentication();
+        let client : BasicClient = auth::create_client();
         let state = app::Passport::new(client);
         
         App::new()
@@ -24,12 +24,12 @@ async fn main() {
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
         // serve static files
             .service(
-                fs::new("/static", "../static").show_files_listing()
+                fs::new("/static", "./static").show_files_listing()
             )
         // default login page
             .route("/", web::get().to(route::default))
         // authorization
-            .route("/login", web::get().to(auth::login))
+            .route("/login", web::get().to(auth::prompt_for_authentication))
             .route("/logout", web::get().to(auth::logout))
             .route("/callback", web::get().to(auth::auth))
         // test

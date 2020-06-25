@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
+// local
+use crate::spotify::user::Passport;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TracksObject {
@@ -56,6 +58,10 @@ pub struct PagingObject {
 impl PagingObject {
     pub fn items(&self) -> &Vec<PlaylistObject> {
         &self.items
+    }
+
+    pub fn next(&self) -> &Option<String> {
+        &self.next
     }
 }
 

@@ -21,12 +21,20 @@ pub async fn render_main() -> impl Responder {
         .body(include_str!("../templates/main.html"))
 }
 
-pub async fn test(client: web::Data<Passport>) -> impl Responder {
-    // client.tracks("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await;
-    if let Some(res) = client.playlists().await {
+pub async fn test(spotify: web::Data<Passport>) -> impl Responder {
+    // spotify.tracks("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await;
+    if let Some(mut res) = spotify.playlists().await {
         for playlist in res.items().iter() {
             println!("{}", playlist.id());
         }
+
+        while let Some(page) = spotify.next(&res).await {
+            for play in page.items().iter() {
+                println!("{}", play.id());
+            }
+            res = page;
+        }
+
         // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
         let json_struct = serde_json::to_string(&res).unwrap();
         HttpResponse::Ok()

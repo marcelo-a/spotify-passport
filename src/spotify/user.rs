@@ -4,7 +4,7 @@ use awc::Client;
 use oauth2::basic::BasicClient;
 use oauth2::PkceCodeVerifier;
 // local crates
-use crate::spotify::playlist::PagingObject;
+use crate::spotify::playlist::{PagingObject, PlaylistObject};
 
 // #[derive(Deserialize)]
 pub struct Passport {
@@ -48,7 +48,6 @@ impl Passport {
     }
 
     pub async fn playlists(&self) -> Option<PagingObject> {
-        let now = Instant::now();
         // "GET" "https://api.spotify.com/v1/me/playlists" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer {}"
         if let Ok(access_token) = env::var("token") {
             match self.appclient
@@ -78,10 +77,44 @@ impl Passport {
             panic!("Cannot retrieve access_token from env!");
         }
 
-        let then : f64 = (now.elapsed().as_millis() as f64) / 1000.0;
-        println!("{}", then);
-
         return None
+    }
+
+    pub async fn next(&self, obj: &PagingObject) -> Option<PagingObject> {
+        if let Ok(access_token) = env::var("token") {
+            if let Some(next_set) = obj.next() {
+                match self.appclient
+                    .get(next_set)
+                    .bearer_auth(access_token)
+                    .content_type("application/json")
+                    .header("Accept", "application/json")
+                    .send().await { // <- send http request and wait for response
+                        // check if successful
+                        Ok(mut res) => {
+                            if let Ok(json) = res.json::<PagingObject>().await {
+                                assert!(res.status().is_success());
+                                // println!("Next retrieved");
+                                return Some(json)
+                            }
+                            else {
+                                panic!("JSON parsing error!");
+                            }
+                        },
+                        // response error!
+                        Err(e) => {
+                            panic!("GET request error! {}", e);
+                        }
+                    }
+            }
+            else {
+                // println!("Next is null");
+                return None
+            }
+        }
+        else {
+            panic!("Cannot retrieve access_token from env!");
+            return None
+        }
     }
 
     /*pub async fn tracks(&self, playlist_id: String) /*-> HttpResponse*/ {

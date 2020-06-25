@@ -1,10 +1,19 @@
 use std::env;
 use std::time::Instant;
 use std::collections::{HashSet, HashMap};
-use spotify::user;
+use spotify::{user, playlist::PagingObject};
 
 pub fn fetch_info(user: User, token: Option<String>, playlist_name: Option<String>) -> Option<HashMap<String, u64>> {
     let now = Instant::now();
+
+    if let Some(res) = client.playlists().await {
+        for playlist in res.items.iter() {
+            printl!("{}", playlist.id);
+        }
+    }
+    else {
+
+    }
 
     match (token, playlist_name) {
         (Some(token), Some(playlist_name)) => {

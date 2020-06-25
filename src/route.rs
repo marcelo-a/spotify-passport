@@ -1,13 +1,12 @@
-#![allow(unused_imports)]
+// #![allow(unused_imports)]
 #![allow(unused_variables)]
 use std::env;
 use actix_web::{web, App, HttpResponse, HttpRequest, Responder};
 use actix_web::http::{StatusCode};
 use actix_session::Session;
-use spotify_lib::spotify::*;
-// #[macro_use] extern crate serde_derive;
+use serde_json;
+// local crates
 use spotify_lib::spotify::user::{Passport};
-// use crate::spotify::user::{Passport};
 
 
 pub async fn default() -> impl Responder {
@@ -23,8 +22,21 @@ pub async fn render_main() -> impl Responder {
 }
 
 pub async fn test(client: web::Data<Passport>) -> impl Responder {
-    client.playlists().await;
-    HttpResponse::Ok().body("Hello world again!")
+    // client.tracks("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await;
+    if let Some(res) = client.playlists().await {
+        for playlist in res.items().iter() {
+            println!("{}", playlist.id());
+        }
+        // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
+        let json_struct = serde_json::to_string(&res).unwrap();
+        HttpResponse::Ok()
+            .body(json_struct)
+    }
+    else {
+        HttpResponse::BadRequest()
+            .header("Location", "/error")
+            .body("Error occurred!")
+    }
 }
 
 // pub async fn run(req: HttpRequest) -> impl Result<Json<String>> {

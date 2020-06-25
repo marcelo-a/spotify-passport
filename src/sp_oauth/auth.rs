@@ -51,7 +51,7 @@ pub async fn login_status(session: Session) -> HttpResponse {
 pub async fn prompt_for_authentication(session: Session, data: web::Data<Passport>) -> HttpResponse {
     // if already logged in, skip authorization
     if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
-        if let Some(temp) = session.get::<String>("token").unwrap() {
+        if let Some(_temp) = session.get::<String>("token").unwrap() {
             // env::set_var("token", &temp);
             HttpResponse::Found()
                 .header(header::LOCATION, "home")
@@ -82,7 +82,7 @@ pub async fn prompt_for_authentication(session: Session, data: web::Data<Passpor
             // ))
             .set_pkce_challenge(pkce_code_challenge)
             .url();
-        println!("{}", authorize_url);
+        // println!("{}", authorize_url);
 
         HttpResponse::Found()
             .header(header::LOCATION, authorize_url.to_string())

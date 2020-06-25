@@ -12,7 +12,7 @@ async fn main() {
     // REPLACE FIELDS WITH YOUR INFO
     auth::set_env("SPOTIFY_CLIENT_ID".to_string(),
             "SPOTIFY_CLIENT_SECRET".to_string(),
-            "SPOTIFY_REDIRECT_URI".to_string());
+            "SPOTIFY_REDIRECT_URI".to_string(),
             "MUSIXMATCH_API_KEY".to_string());
 
     HttpServer::new(|| {

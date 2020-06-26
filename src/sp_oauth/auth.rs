@@ -14,7 +14,7 @@ use oauth2::reqwest::http_client;
 use oauth2::TokenResponse;
 
 // other directories
-use crate::spotify::user::{Passport};
+use crate::spotify::api::{Passport};
 
 pub async fn login_status(session: Session) -> HttpResponse {
     let link = if let Some(_login) = session.get::<bool>("login").unwrap() {

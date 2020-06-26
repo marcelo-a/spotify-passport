@@ -4,7 +4,7 @@ use actix_session::CookieSession;
 use actix_files::Files as fs;
 use oauth2::basic::BasicClient;
 use spotify_lib::sp_oauth::auth as auth;
-use spotify_lib::spotify::user as app;
+use spotify_lib::spotify::api as app;
 mod route;
 
 #[actix_rt::main]

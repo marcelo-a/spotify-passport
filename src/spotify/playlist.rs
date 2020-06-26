@@ -1,22 +1,22 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 // local
-use crate::spotify::user::Passport;
+use crate::spotify::api::Passport;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TracksObject {
     href: String,
     total: i64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ImageObject {
     height: Option<i64>,
     url: String,
     width: Option<i64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserObject {
     display_name: String,
     external_urls: HashMap<String, String>,
@@ -26,7 +26,7 @@ pub struct UserObject {
     uri: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PlaylistObject {
     collaborative: bool,
     description: String,
@@ -44,7 +44,7 @@ pub struct PlaylistObject {
     uri: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PagingObject {
     href: String,
     items: Vec<PlaylistObject>,

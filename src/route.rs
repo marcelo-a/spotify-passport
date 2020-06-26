@@ -1,12 +1,12 @@
 // #![allow(unused_imports)]
 #![allow(unused_variables)]
 use std::env;
-use actix_web::{web, App, HttpResponse, HttpRequest, Responder};
+use actix_web::{web, HttpResponse, HttpRequest, Responder};
 use actix_web::http::{StatusCode};
 use actix_session::Session;
 use serde_json;
 // local crates
-use spotify_lib::spotify::user::{Passport};
+use spotify_lib::spotify::api::{Passport};
 
 
 pub async fn default() -> impl Responder {
@@ -23,18 +23,7 @@ pub async fn render_main() -> impl Responder {
 
 pub async fn test(spotify: web::Data<Passport>) -> impl Responder {
     // spotify.tracks("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await;
-    if let Some(mut res) = spotify.playlists().await {
-        for playlist in res.items().iter() {
-            println!("{}", playlist.id());
-        }
-
-        while let Some(page) = spotify.next(&res).await {
-            for play in page.items().iter() {
-                println!("{}", play.id());
-            }
-            res = page;
-        }
-
+    if let Some(mut res) = spotify.current_user_profile().await {
         // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
         let json_struct = serde_json::to_string(&res).unwrap();
         HttpResponse::Ok()

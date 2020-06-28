@@ -21,9 +21,8 @@ pub async fn render_main() -> impl Responder {
         .body(include_str!("../templates/main.html"))
 }
 
-pub async fn test(spotify: web::Data<Passport>) -> impl Responder {
-    // spotify.tracks("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await;
-    if let Some(mut res) = spotify.current_user_profile().await {
+pub async fn test(session: Session, spotify: web::Data<Passport>) -> impl Responder {
+    if let Some(mut res) = spotify.playlist_artists("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await {
         // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
         let json_struct = serde_json::to_string(&res).unwrap();
         HttpResponse::Ok()

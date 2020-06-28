@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
-// local
-use crate::spotify::api::Passport;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TracksObject {

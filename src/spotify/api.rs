@@ -7,6 +7,7 @@ use oauth2::{basic::BasicClient, PkceCodeVerifier};
 // local crates
 use crate::spotify::playlist::{PagingObject, PlaylistObject};
 use crate::spotify::user::{UserObject};
+use crate::spotify::track::{TrackPagingObject};
 // temp crates
 // use std::time::Instant;
 
@@ -196,7 +197,71 @@ impl Passport {
         }
     }*/
 
-    // pub fn user_playlist_tracks(user=username, playlist_id=playlist['id'], fields="items,next") {
+    pub async fn playlist_artists(&self, playlist_id: String) -> Option<TrackPagingObject> {
+        // GET https://api.spotify.com/v1/playlists/{playlist_id}/tracks
+        if let Ok(access_token) = env::var("token") {
+            match self.appclient
+                .get(format!("https://api.spotify.com/v1/playlists/{}/tracks", playlist_id))
+                .bearer_auth(access_token)
+                .query(&[("fields", "items(track(artists(name)))")]).unwrap() // fields=items(track(artists))
+                .content_type("application/json")
+                .header("Accept", "application/json")
+                .send().await { // <- send http request and wait for response
+                    Ok(mut res) => {
+                        if let Ok(json) = res.json::<TrackPagingObject>().await {
+                            assert!(res.status().is_success());
+                            println!("Response retrieved");
+                            return Some(json)
+                        }
+                        else {
+                            panic!("JSON parsing error!");
+                        }
+                    },
+                    // response error!
+                    Err(e) => {
+                        panic!("GET request error! {}", e);
+                    }
+                }
+        }
+        else {
+            println!("Cannot retrieve access_token from env!");
+        }
 
-    // }
+        return None
+    }
+
+    /*pub fn user_playlist_tracks(username: String, playlist_id: String, fields: String) ->{
+        // GET "https://api.spotify.com/v1/me" -H "Authorization: Bearer {your access token}"
+        if let Ok(access_token) = env::var("token") {
+            match self.appclient
+                .get("https://api.spotify.com/v1/me")
+                .query(&[("fields", "items(track(artists))")]) // fields=items(track(artists))
+                .bearer_auth(access_token)
+                .content_type("application/json")
+                .header("Accept", "application/json")
+                .send().await { // <- send http request and wait for response
+                    // check if successful
+                    Ok(mut res) => {
+                        // println!("{:?}", res);
+                        if let Ok(json) = res.json::<UserObject>().await {
+                            assert!(res.status().is_success());
+                            println!("Response retrieved");
+                            return Some(json)
+                        }
+                        else {
+                            panic!("JSON parsing error!");
+                        }
+                    },
+                    // response error!
+                    Err(e) => {
+                        panic!("GET request error! {}", e);
+                    }
+                }
+        }
+        else {
+            panic!("Cannot retrieve access_token from env!");
+        }
+
+        return None
+    }*/
 }

@@ -6,6 +6,7 @@ use actix_web::http::{StatusCode};
 use actix_session::Session;
 use serde_json;
 // local crates
+use std::collections::HashMap;
 use spotify_lib::spotify::api::{Passport};
 
 
@@ -22,6 +23,68 @@ pub async fn render_main() -> impl Responder {
 }
 
 pub async fn test(session: Session, spotify: web::Data<Passport>) -> impl Responder {
+    if let Some(token) = session.get::<String>("token").unwrap() {
+        if let Some(mut res) = spotify.playlists().await {
+
+            let mut a : HashMap<String, u64> = HashMap::new();
+            for playlist in res.items().iter() {
+                // println!("{}", playlist.id());
+                if playlist.id() == "58ajLqXikSn2ysmsg2Y4Wq" {
+                    if let Some(mut temp) = spotify.playlist_artists(playlist.id().to_string()).await {
+                        // println!("{:?}", playlist.items);
+                        for obj in temp.items.iter() {
+                            for artist in obj.track.artists.iter() {
+                                if !a.contains_key(artist.name()) {
+                                    a.insert(artist.name().to_string(), 1);
+                                }
+                                else {
+                                    *a.get_mut(artist.name()).unwrap() += 1;
+                                }
+                            }
+                        }
+
+                        while let Some(next) = spotify.next_artists(temp.next()).await {
+                            for obj in next.items.iter() {
+                                for artist in obj.track.artists.iter() {
+                                    if !a.contains_key(artist.name()) {
+                                        a.insert(artist.name().to_string(), 1);
+                                    }
+                                    else {
+                                        *a.get_mut(artist.name()).unwrap() += 1;
+                                    }
+                                }
+                            }
+                            temp = next;
+                        }
+                        // println!("{:?}", a);
+                    }
+                    let json_struct = serde_json::to_string(&a).unwrap();
+                    return HttpResponse::Ok()
+                            .body(json_struct)
+
+                    // let Some(page) = spotify.next(&playlist)
+                    // while let Some(page) = spotify.next(&res).await {
+                    //     // for play in page.items().iter() {
+                    //     //     println!("{}", play.id());
+                    //     // }
+                    //     res = page;
+                    //     if let Some(mut temp) = spotify.playlist_artists(playlist.id().to_string()).await {
+                    //         for obj in temp.items.iter() {
+                    //             for artist in obj.track.artists.iter() {
+                    //                 println!("{}", artist.name());
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                }
+            }
+        }
+    }
+    else {
+        println!("token not retrieved");
+    }
+
+
     if let Some(mut res) = spotify.playlist_artists("58ajLqXikSn2ysmsg2Y4Wq".to_string()).await {
         // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
         let json_struct = serde_json::to_string(&res).unwrap();

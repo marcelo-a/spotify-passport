@@ -203,7 +203,7 @@ impl Passport {
             match self.appclient
                 .get(format!("https://api.spotify.com/v1/playlists/{}/tracks", playlist_id))
                 .bearer_auth(access_token)
-                .query(&[("fields", "items(track(artists(name)))")]).unwrap() // fields=items(track(artists))
+                .query(&[("fields", "next, items(track(artists(name)))")]).unwrap() // fields=items(track(artists))
                 .content_type("application/json")
                 .header("Accept", "application/json")
                 .send().await { // <- send http request and wait for response
@@ -228,6 +228,45 @@ impl Passport {
         }
 
         return None
+    }
+
+    pub async fn next_artists(&self, next_set: &Option<String>) -> Option<TrackPagingObject> {
+        if let Ok(access_token) = env::var("token") {
+            if let Some(next_url) = next_set {
+                match self.appclient
+                    .get(next_url)
+                    .bearer_auth(access_token)
+                    .content_type("application/json")
+                    .header("Accept", "application/json")
+                    .send().await { // <- send http request and wait for response
+                        Ok(mut res) => {
+                            if let Ok(json) = res.json::<TrackPagingObject>().await {
+                                // check for success
+                                assert!(res.status().is_success());
+                                // save paging object for later use
+                                // &self.user_playlists = Some(json);
+                                // return paging object
+                                return Some(json)
+                            }
+                            else {
+                                panic!("JSON parsing error!");
+                            }
+                        },
+                        // response error!
+                        Err(e) => {
+                            panic!("GET request error! {}", e);
+                        }
+                    }
+            }
+            else {
+                // println!("Next is null");
+                return None
+            }
+        }
+        else {
+            panic!("Cannot retrieve access_token from env!");
+            return None
+        }
     }
 
     /*pub fn user_playlist_tracks(username: String, playlist_id: String, fields: String) ->{

@@ -38,6 +38,7 @@ def login():
 @app.route('/run', methods=['GET'])
 def run():
     if request.method == 'GET':
+
         playlist_name = request.args.get('playlist')
         if playlist_name:
             # get args
@@ -46,8 +47,9 @@ def run():
             token = environ.get('token')
 
             data = passport.run(username, token, playlist_name)
+
             if (type(data) == str):
-                abort(404, description)
+                abort(404, description=data)
             else:
                 return jsonify(data)  # serialize and use JSON headers
         else:

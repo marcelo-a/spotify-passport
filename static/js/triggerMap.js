@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
             error: function(request, status, error) {
                 hideSpinner();
                 console.log("Error: " + error)
-                alert("Error " + request.status + ": " + error);
+                var start = request.responseText.search("<p>");
+                var end = request.responseText.search("</p>");
+                let msg = request.responseText.substring(start+3, end);
+                alert("Error " + request.status + ": " + msg);
             }
         });
 

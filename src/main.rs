@@ -35,7 +35,8 @@ async fn main() {
         // test
             .route("/status", web::get().to(auth::login_status))
             .route("/home", web::get().to(route::render_main))
-            .route("/playlist", web::get().to(route::test))
+            // .route("/playlist", web::get().to(route::test))
+            .route("/test", web::get().to(route::test))
         // drivers
             .route("/run", web::get().to(route::run))
     })

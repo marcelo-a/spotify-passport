@@ -10,6 +10,7 @@ use crate::spotify::user::{UserObject};
 use crate::spotify::track::{TrackPagingObject};
 // temp crates
 // use std::time::Instant;
+use std::collections::{HashSet, HashMap};
 
 // #[derive(DerefMut)]
 pub struct Passport {
@@ -72,7 +73,7 @@ impl Passport {
                         // println!("{:?}", res);
                         if let Ok(json) = res.json::<UserObject>().await {
                             assert!(res.status().is_success());
-                            println!("Response retrieved");
+                            // println!("Response retrieved");
                             return Some(json)
                         }
                         else {
@@ -81,7 +82,7 @@ impl Passport {
                     },
                     // response error!
                     Err(e) => {
-                        panic!("GET request error! {}", e);
+                        panic!("GET Spotify current user profile request error! {}", e);
                     }
                 }
         }
@@ -105,7 +106,7 @@ impl Passport {
                     Ok(mut res) => {
                         if let Ok(json) = res.json::<PagingObject>().await {
                             assert!(res.status().is_success());
-                            println!("Response retrieved");
+                            // println!("Response retrieved");
                             return Some(json)
                         }
                         else {
@@ -114,7 +115,7 @@ impl Passport {
                     },
                     // response error!
                     Err(e) => {
-                        panic!("GET request error! {}", e);
+                        panic!("GET Spotify playlists request error! {}", e);
                     }
                 }
         }
@@ -149,7 +150,7 @@ impl Passport {
                         },
                         // response error!
                         Err(e) => {
-                            panic!("GET request error! {}", e);
+                            panic!("Spotify GET next request error! {}", e);
                         }
                     }
             }
@@ -210,7 +211,7 @@ impl Passport {
                     Ok(mut res) => {
                         if let Ok(json) = res.json::<TrackPagingObject>().await {
                             assert!(res.status().is_success());
-                            println!("Response retrieved");
+                            // println!("Response retrieved");
                             return Some(json)
                         }
                         else {
@@ -219,7 +220,7 @@ impl Passport {
                     },
                     // response error!
                     Err(e) => {
-                        panic!("GET request error! {}", e);
+                        panic!("Spotify GET playlist artists request error! {}", e);
                     }
                 }
         }
@@ -254,7 +255,7 @@ impl Passport {
                         },
                         // response error!
                         Err(e) => {
-                            panic!("GET request error! {}", e);
+                            panic!("Spotify GET next artist page request error! {}", e);
                         }
                     }
             }
@@ -303,4 +304,50 @@ impl Passport {
 
         return None
     }*/
+
+    pub async fn fetch_artists(&self, desired_id: &String) -> Option<HashMap<String, u64>> {
+        if let Some(mut res) = self.playlists().await {
+    
+            let mut map : HashMap<String, u64> = HashMap::new();
+            for playlist in res.items().iter() {
+                // println!("{}", playlist.id());
+                if playlist.id() == desired_id {
+                    if let Some(mut temp) = self.playlist_artists(playlist.id().to_string()).await {
+                        // println!("{:?}", playlist.items);
+                        for obj in temp.items.iter() {
+                            for artist in obj.track.artists.iter() {
+                                if !map.contains_key(artist.name()) {
+                                    map.insert(artist.name().to_string(), 1);
+                                }
+                                else {
+                                    *map.get_mut(artist.name()).unwrap() += 1;
+                                }
+                            }
+                        }
+    
+                        while let Some(next) = self.next_artists(temp.next()).await {
+                            for obj in next.items.iter() {
+                                for artist in obj.track.artists.iter() {
+                                    if !map.contains_key(artist.name()) {
+                                        map.insert(artist.name().to_string(), 1);
+                                    }
+                                    else {
+                                        *map.get_mut(artist.name()).unwrap() += 1;
+                                    }
+                                }
+                            }
+                            temp = next;
+                        }
+                        // println!("{:?}", a);
+                        // let json_struct = serde_json::to_string(&a).unwrap();
+                        // return Some(json_struct);
+                        return Some(map);
+                    }
+                }
+            }
+        }
+        // else {
+            return None;
+        // }
+    }
 }

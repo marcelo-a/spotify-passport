@@ -2,3 +2,4 @@
 target
 src/sp_oauth/example.rs
 Cargo.lock
+src/musixmatch/artist.rs

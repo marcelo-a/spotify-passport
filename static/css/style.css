@@ -20,15 +20,24 @@ p {
   max-width: 700px;
 }
 
-input {
+select {
   width: 250px;
   margin-bottom: 10px;
-  padding: 5px 5px;
+  padding: 8px 15px;
 }
 
-input[type=text]:focus {
-  border: 3px solid #762d53;
+select:focus {
+  border: 3px solid #762d53 !important;
   outline: none;
+}
+
+.custom-select {
+}
+
+.custom-select > option{
+  background-color: #8b33713a;
+  border: 3px solid lightgray;
+  padding: 8px 32px;
 }
 
 footer {

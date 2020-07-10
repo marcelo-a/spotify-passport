@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const input = document.querySelector('input');
+    const input = document.getElementById('select_form');
     document.querySelector('form').addEventListener('submit', function(event) {
         // on submit, show spinner
         showSpinner();
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cache: true,
             async: 'asynchronous',
             data : {
-                playlist: encodeURIComponent(input.value) // properly encode spaces
+                playlist_id: encodeURIComponent(input.value) // properly encode spaces
             },
             dataType: 'json',
             success: function(response) {

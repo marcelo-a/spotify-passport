@@ -32,7 +32,9 @@
       <div>
         <h4>Let's search for a playlist:</h4>
         <form id="form">
-          <input type="text" maxlength="35" placeholder="Playlist name">
+          <select id="select_form" class="custom-select" autofocus>
+            <option selected style="display: none;">Choose..</option>
+          </select>
           <button id="trigger" class="btn btn-sm btn-aubergine" type="submit">Submit</button>
           <div id="spinner" class="line-scale loader-inner">
             <div></div>
@@ -59,14 +61,14 @@
           <span class="glyphicon glyphicon-log-out"></span> Log out
         </a>
       </div>
-    </main>
 
-    <!-- github link -->
-    <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
-      <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
-        <i class="fab fa-github fa-2x" style="float:left; color:#762d53"></i>
-      </a>
-    </div>
+      <!-- github link -->
+      <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
+        <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
+          <i class="fab fa-github fa-2x" style="float:left; color:#762d53"></i>
+        </a>
+      </div>
+    </main>
 
     <!-- Your web-app is https, so your scripts need to be too -->
     <!-- stylesheets -->
@@ -78,7 +80,7 @@
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"></script>
     <script type="text/javascript" src="../static/js/triggerMap.js"></script>
+    <script type="text/javascript" src="../static/js/helper.js"></script>
 
   </body>
-
 </html>

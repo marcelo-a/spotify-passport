@@ -28,7 +28,9 @@ async fn main() {
                 fs::new("/static", "./static")
                 .redirect_to_slash_directory()
                 .disable_content_disposition()
-                // .index_file("/html/index.html")
+                .default_handler(
+                    web::route().to(route::error)
+                )
             )
         // templates/pages
             .route("/", web::get().to(route::default))
@@ -39,10 +41,9 @@ async fn main() {
             .route("/callback", web::get().to(auth::auth))
         // test
             .route("/status", web::get().to(auth::login_status))
-            // .route("/playlist", web::get().to(route::test))
             .route("/test", web::get().to(route::test))
         // drivers
-            .route("/run", web::get().to(route::run))
+            .route("/build", web::get().to(route::run))
             .route("/user_playlists", web::get().to(route::collect_playlists))
         // redirect to error page
             .default_service(

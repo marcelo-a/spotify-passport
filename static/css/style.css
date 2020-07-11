@@ -31,14 +31,6 @@ select:focus {
   outline: none;
 }
 
-.custom-select {
-}
-
-.custom-select > option{
-  background-color: #a373953a;
-  border: 3px solid rgba(192, 138, 177, 0.322);
-}
-
 footer {
   margin-top: 50px;
   padding-top: 25px;

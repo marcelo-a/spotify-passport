@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         $.ajax({
             type: 'get',
-            url: '/run',
+            url: '/build',
             cache: true,
             async: 'asynchronous',
             data : {

@@ -1,3 +1,4 @@
+use std::env;
 use awc::Client;
 use urlencoding::encode;
 use regex::Regex;
@@ -14,7 +15,7 @@ impl Default for Musixmatch {
     fn default() -> Musixmatch {
         Musixmatch {
             root: String::from("https://api.musixmatch.com/ws/1.1/"),
-            api_key: String::from("MUSIXMATCH_API_KEY"),
+            api_key: env::var("MUSIXMATCH_API_KEY").unwrap(),
             musix_client: Client::default(),
         }
     }
@@ -25,13 +26,12 @@ impl Musixmatch {
     pub async fn search_artist(&self, artist_name: &String) -> Option<String> {
         let en_name = encode(artist_name);
         let encoded_url = format!(
-            // "{}artist.search?apikey={}&q_artist={}&page_size=3&format=json&s_artist_rating=DESC",
-            "{0}artist.search?q_artist={2}&page_size=1&format=json&apikey={1}",
+            "{0}artist.search?q_artist={2}&page_size=1&page=1&format=json&apikey={1}&s_artist_rating=DESC",
             &self.root,
             &self.api_key,
             en_name
         );
-            
+
         match self.musix_client
             .get(encoded_url)
             .header("ContentType", "application/json charset=utf-8")

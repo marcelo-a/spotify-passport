@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             error: function(request, status, error) {
                 hideSpinner();
                 console.log("Error: " + error)
-                alert("Error " + request.status + ": " + error);
+                alert("Oops! Something went wrong, please try again.");
             }
         });
 
@@ -36,11 +36,18 @@ function parseData(data) {
     // on success, hide spinner
     hideSpinner();
 
+    // reset array to zeroes
+    for (const iso_pair of countries_array) {
+        if (iso_pair[0] == 'Country') continue;
+        else iso_pair[1] = 0;
+    }
+
     // update map
-    for (var key in data) {
+    for (const key in data) {
         countries_array.forEach( function(pair) {
             if (key == pair[0]) {
                 pair[1] = data[key];
+                return;
             }
         });
     }
@@ -53,7 +60,7 @@ function parseData(data) {
         document.getElementById('sidenote').innerHTML = '';
     }
 
-    drawRegionsMap(data);
+    drawRegionsMap();
 }
   
 function showSpinner() {

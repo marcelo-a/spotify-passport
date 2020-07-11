@@ -2,16 +2,16 @@
 use std::env;
 use serde::Deserialize;
 use actix_session::Session;
-use actix_web::http::header;
-use actix_web::{web, HttpResponse};
+use actix_web::{
+    web, HttpResponse, Responder,
+    http::{StatusCode, header}
+};
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId,
     ClientSecret, CsrfToken, PkceCodeChallenge,
-    RedirectUrl, Scope, TokenUrl, PkceCodeVerifier
+    RedirectUrl, Scope, TokenUrl, PkceCodeVerifier,
+    basic::BasicClient, reqwest::http_client, TokenResponse
 };
-use oauth2::basic::BasicClient;
-use oauth2::reqwest::http_client;
-use oauth2::TokenResponse;
 
 // other directories
 use crate::spotify::api::{Passport};
@@ -50,50 +50,58 @@ pub async fn login_status(session: Session) -> HttpResponse {
 
 pub async fn prompt_for_authentication(session: Session, data: web::Data<Passport>) -> HttpResponse {
     // if already logged in, skip authorization
-    if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
-        if let Some(_temp) = session.get::<String>("token").unwrap() {
-            // env::set_var("token", &temp);
+    if let Ok(opt) = session.get::<bool>("login") {
+    // if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
+        if let Some(_temp) = opt {
+            if let Some(_temp) = session.get::<String>("token").unwrap() {
+                HttpResponse::Found()
+                    .header(header::LOCATION, "/home")
+                    .finish()
+            }
+            else {
+                HttpResponse::Found()
+                    .header(header::LOCATION, "/")
+                    .finish()
+            }
+        } else {
+            // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
+            // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
+            let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+            // data.set_pkce(pkce_code_verifier);
+            env::set_var("pkce_verifier", pkce_code_verifier.secret());
+
+            // Generate the authorization URL to which we'll redirect the user.
+            let (authorize_url, _csrf_state) = &data
+                .oauth()
+                .authorize_url(CsrfToken::new_random)
+                // Requesting read access to user's private playlists.
+                .add_scope(Scope::new(
+                    "playlist-read-private".to_string(),
+                ))
+                // .add_scope(Scope::new(
+                //     "user-read-private".to_string(),
+                // ))
+                .set_pkce_challenge(pkce_code_challenge)
+                .url();
+            // println!("{}", authorize_url);
+
             HttpResponse::Found()
-                .header(header::LOCATION, "home")
+                .header(header::LOCATION, authorize_url.to_string())
                 .finish()
         }
-        else {
-            HttpResponse::Found()
-                .header(header::LOCATION, "/")
-                .finish()
-        }
-    } else {
-        // Spotify Proof Key for Code Exchange (PKCE - https://oauth.net/2/pkce/).
-        // Create a PKCE code verifier and SHA-256 encode it as a code challenge.
-        let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
-        // data.set_pkce(pkce_code_verifier);
-        env::set_var("pkce_verifier", pkce_code_verifier.secret());
-
-        // Generate the authorization URL to which we'll redirect the user.
-        let (authorize_url, _csrf_state) = &data
-            .oauth()
-            .authorize_url(CsrfToken::new_random)
-            // Requesting read access to user's private playlists.
-            .add_scope(Scope::new(
-                "playlist-read-private".to_string(),
-            ))
-            // .add_scope(Scope::new(
-            //     "user-read-private".to_string(),
-            // ))
-            .set_pkce_challenge(pkce_code_challenge)
-            .url();
-        // println!("{}", authorize_url);
-
-        HttpResponse::Found()
-            .header(header::LOCATION, authorize_url.to_string())
-            .finish()
+    }
+    else {
+        // return error
+        return HttpResponse::build(StatusCode::UNAUTHORIZED)
+                .content_type("text/html; charset=utf-8")
+                .body(include_str!("../../html/error.html"))
     }
 }
 
 pub async fn logout(session: Session) -> HttpResponse {
     session.remove("login");
     HttpResponse::Found()
-        .header(header::LOCATION, "/".to_string())
+        .header(header::LOCATION, "/")
         .finish()
 }
 
@@ -146,7 +154,7 @@ pub async fn auth(
 
     // redirect to /main
     HttpResponse::Found()
-        .header(header::LOCATION, "home")
+        .header(header::LOCATION, "/home")
         .finish()
 }
 

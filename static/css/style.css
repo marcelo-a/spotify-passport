@@ -35,9 +35,8 @@ select:focus {
 }
 
 .custom-select > option{
-  background-color: #8b33713a;
-  border: 3px solid lightgray;
-  padding: 8px 32px;
+  background-color: #a373953a;
+  border: 3px solid rgba(192, 138, 177, 0.322);
 }
 
 footer {

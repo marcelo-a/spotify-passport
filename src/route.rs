@@ -4,7 +4,7 @@ use std::{env, collections::HashMap};
 use serde::Deserialize;
 use serde_json;
 use actix_web::{web, HttpResponse, HttpRequest, Responder};
-use actix_web::http::{StatusCode};
+use actix_web::http::{StatusCode, header};
 use actix_session::Session;
 use std::time::Instant;
 // local crates
@@ -14,13 +14,19 @@ use spotify_lib::musixmatch::musix::Musixmatch;
 pub async fn default() -> impl Responder {
     HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
-        .body(include_str!("../templates/index.html"))
+        .body(include_str!("../html/index.html"))
 }
 
 pub async fn render_main() -> impl Responder {
     HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
-        .body(include_str!("../templates/main.html"))
+        .body(include_str!("../html/main.html"))
+}
+
+pub async fn error() -> HttpResponse {
+    HttpResponse::build(StatusCode::NOT_FOUND)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../html/error.html"))
 }
 
 #[derive(Deserialize)]
@@ -60,29 +66,43 @@ pub async fn run(
     url: web::Query<Req>, // deserialize URL query into struct
 // ) -> Option<String> {
 ) -> impl Responder {
-    if let Some(token) = session.get::<String>("token").unwrap() {
-        // Serialization can fail if T's implementation of Serialize decides to fail, or if T contains a map with non-string keys.
-        // println!("{}", url.playlist_id);
+    if let Some(token) = session.get::<String>("token").unwrap() { // panic! for some reason
+
         let now = Instant::now();
 
         if let Some(artist_map) = spotify.fetch_artists(&url.playlist_id).await {
             let musix = Musixmatch::default();
             let mut iso_code = HashMap::new();
+            let mut freq : HashMap<String, u64> = HashMap::new();
             for artist in artist_map.keys() {
                 if let Some(country_code) = musix.search_artist(artist).await {
-                    println!("{}: {}", artist, country_code);
-                    iso_code.insert(artist, country_code);
-                }
-                else {
-                    println!("{}: \"Unknown\"", artist);
+                    // println!("{}: {}", artist, country_code);
+                    iso_code.insert(artist, country_code.to_owned());
+                    if country_code.is_empty() {
+                        if freq.contains_key("unknown") {
+                            *freq.get_mut("unknown").unwrap() += 1;
+                        }
+                        else {
+                            freq.insert("unknown".to_string(), 0); // init unk
+                        }
+                    }
+                    else {
+                        if freq.contains_key(&country_code) {
+                            *freq.get_mut(&country_code).unwrap() += 1;
+                        }
+                        else {
+                            freq.insert(country_code, 1);
+                        }
+                    }
                 }
             }
-
+            println!("{:?}", freq);
             // let then = Instant::now();
             println!("{}", now.elapsed().as_millis());
-            let json = serde_json::to_string(&iso_code).unwrap();
+            // let json = serde_json::to_string(&freq).unwrap();
             return HttpResponse::Ok()
-                    .body(json)
+                    // .body(json)
+                    .json(freq)
         }
         else {
             println!("Unable to fetch artists!");
@@ -95,4 +115,24 @@ pub async fn run(
     HttpResponse::BadRequest()
         .header("Location", "/error")
         .body("Error occurred!")
+}
+
+pub async fn collect_playlists(
+    session: Session,
+    spotify: web::Data<Passport>,
+) -> HttpResponse {
+    // collect playlists to build form
+    if let Some(playlist_map) = spotify.retrieve_all_playlists().await {
+        // redirect to /main and send names
+        // let json_map = serde_json::to_string(&playlist_map).unwrap();
+
+        return HttpResponse::Accepted()
+            // .header(header::ContentType, "application/json")
+            .json(playlist_map)
+            // .body(json_map)
+    }
+    else {
+        println!("Unable to compile list!");
+        return error().await
+    }
 }

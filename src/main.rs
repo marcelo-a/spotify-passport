@@ -1,5 +1,5 @@
 // #![allow(unused_imports)]
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, middleware, App, HttpServer};
 use actix_session::CookieSession;
 use actix_files::Files as fs;
 use oauth2::basic::BasicClient;
@@ -22,23 +22,32 @@ async fn main() {
         App::new()
             .data(state)
             .wrap(CookieSession::signed(&[0; 32]).secure(false))
+            .wrap(middleware::NormalizePath)
         // serve static files
             .service(
-                fs::new("/static", "./static").show_files_listing()
+                fs::new("/static", "./static")
+                .redirect_to_slash_directory()
+                .disable_content_disposition()
+                // .index_file("/html/index.html")
             )
-        // default login page
+        // templates/pages
             .route("/", web::get().to(route::default))
+            .route("/home", web::get().to(route::render_main))
         // authorization
             .route("/login", web::get().to(auth::prompt_for_authentication))
             .route("/logout", web::get().to(auth::logout))
             .route("/callback", web::get().to(auth::auth))
         // test
             .route("/status", web::get().to(auth::login_status))
-            .route("/home", web::get().to(route::render_main))
             // .route("/playlist", web::get().to(route::test))
             .route("/test", web::get().to(route::test))
         // drivers
             .route("/run", web::get().to(route::run))
+            .route("/user_playlists", web::get().to(route::collect_playlists))
+        // redirect to error page
+            .default_service(
+                web::route().to(route::error)
+            )
     })
     .bind("127.0.0.1:8888")
     .expect("Can not bind to port 8888")

@@ -67,4 +67,8 @@ impl PlaylistObject {
     pub fn id(&self) -> &String {
         &self.id
     }
+
+    pub fn name(&self) -> &String {
+        &self.name
+    }
 }

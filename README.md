@@ -72,10 +72,10 @@ $ cargo run --release
 ## Screenshots
 
 ### `Login:`
-<img align="center" src="resources/login_page.png" height="50%" style="padding: 2%"/>
+<img align="center" src="resources/login_page.png" height="75%" width="75%"/>
 
 ### `Home:`
-<img align="center" src="resources/home_page.png" height="50%" style="padding: 2%"/>
+<img align="center" src="resources/home_page.png" height="75%" width="75%"/>
 
 ### `Error:`
-<img align="center" src="resources/error_page.png" height="50%" style="padding: 2%"/>
+<img align="center" src="resources/error_page.png" height="75%" width="75%"/>

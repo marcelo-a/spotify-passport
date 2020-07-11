@@ -51,7 +51,6 @@ pub async fn login_status(session: Session) -> HttpResponse {
 pub async fn prompt_for_authentication(session: Session, data: web::Data<Passport>) -> HttpResponse {
     // if already logged in, skip authorization
     if let Ok(opt) = session.get::<bool>("login") {
-    // if let Some(_logged_in) = session.get::<bool>("login").unwrap() {
         if let Some(_temp) = opt {
             if let Some(_temp) = session.get::<String>("token").unwrap() {
                 HttpResponse::Found()
@@ -83,7 +82,6 @@ pub async fn prompt_for_authentication(session: Session, data: web::Data<Passpor
                 // ))
                 .set_pkce_challenge(pkce_code_challenge)
                 .url();
-            // println!("{}", authorize_url);
 
             HttpResponse::Found()
                 .header(header::LOCATION, authorize_url.to_string())
@@ -117,25 +115,6 @@ pub async fn auth(
     data: web::Data<Passport>,
     res: web::Query<AuthRequest>, // deserialize URL query into struct
 ) -> HttpResponse {
-    // let _code = AuthorizationCode::new(res.code.clone());
-    // let _state = CsrfToken::new(res.state.clone());
-    
-    // TODO: look into pkce verifier
-    // Exchange the code with a token.
-    // let token = &data.oauth
-    //                 .exchange_code(code)
-    //                 // Set the PKCE code verifier.
-    //                 .set_pkce_verifier(pkce_verifier)
-    //                 .request(http_client)?;
-    //                 // .expect("exchange_code failed");
-    // let token = token.access_token();
-    // let html = format!(
-    //     r#"{:?}"#,
-    //     token
-    // );
-    // println!("{}", html);
-    // let response = format!("{:?}", res);
-    
     // save session token
     let pkce_verifier = env::var("pkce_verifier").unwrap();
     let auth_code = res.code.to_string();

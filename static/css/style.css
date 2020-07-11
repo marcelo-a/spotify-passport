@@ -20,14 +20,14 @@ p {
   max-width: 700px;
 }
 
-input {
+select {
   width: 250px;
   margin-bottom: 10px;
-  padding: 5px 5px;
+  padding: 8px 15px;
 }
 
-input[type=text]:focus {
-  border: 3px solid #762d53;
+select:focus {
+  border: 3px solid #762d53 !important;
   outline: none;
 }
 
@@ -75,4 +75,11 @@ footer > a {
 
 .line-scale > div {
   background-color: #1db954;
+}
+
+.logout {
+  color: #696969;
+}
+.logout:hover {
+  color: #404040;
 }

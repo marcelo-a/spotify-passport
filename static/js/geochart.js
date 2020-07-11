@@ -10,7 +10,6 @@ function drawRegionsMap() {
   var data = google.visualization.arrayToDataTable(countries_array);
 
   var options = {
-    // backgroundColor: '#f5f5f5',
     // enableRegionInteractivity: false,
     // tooltip: { textStyle: { fontName: 'helvetica', fontSize: 12 } },
     backgroundColor:'transparent',

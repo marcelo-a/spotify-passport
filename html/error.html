@@ -7,7 +7,7 @@
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style type="text/css">
     :root {
-      background: #503750;
+      background: #ffc107;
     }
     body {
       padding: 15vh 5vw;
@@ -30,13 +30,10 @@
   <body>
     <div class="container">
       <div>
-        <h1> To view your passport, please log in with your Spotify account.</h1>
-        <form id="form">
-          <div class="col-md-7">
-            <input type="text" class="form-control col-sm-5" maxlength="100" placeholder="Your Spotify account URI">
-          </div>
-          <button id="btn" type="submit" class="btn btn-primary btn-aubergine">Log in with Spotify</button>
-        </form>
+        <h1> Oops! Something went wrong! 
+          <p> To view your passport, please return to the home page and log in. </p>
+        </h1>
+        <a href="/" class="btn btn-warning" role="link">Take me back</a>
       </div>
     </div>
 
@@ -47,10 +44,7 @@
     </div>
 
     <!-- Your web-app is https, so your scripts need to be too -->
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script> -->
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://kit.fontawesome.com/bab8a72573.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="../static/js/trigger_login.js"></script>
   </body>
 </html>
-

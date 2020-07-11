@@ -8,7 +8,29 @@ A simple visualization of your Spotify playlists.
 4. Follow the instructions and get to know your listening habits!
 
 ### Notes:
-Accuracy is known to be an issue and can be attributed to Musixmatch's incomplete artist database. No one's perfect, but it's good enough!
++ Please refer to [The Rust Programming Language](https://doc.rust-lang.org/book/ch01-01-installation.html) or [The Cargo Book](https://doc.rust-lang.org/cargo/getting-started/installation.html) for installing Cargo, Rust’s package manager and build system.
++ Accuracy is known to be an issue and can be attributed to Musixmatch's incomplete artist database. No one's perfect, but it's good enough!
++ To compile and run in separate steps try
+
+```bash
+$ cargo build
+$ cargo run
+```
+
+or alternatively (trades longer compile time for code that runs faster)
+
+```bash
+$ cargo build --release
+$ cargo run --release
+```
+
+## Built With
++ [Actix](https://actix.rs/)
++ [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
++ [Musixmatch Web API](https://developer.musixmatch.com/)
++ [Google GeoChart](https://developers.google.com/chart/interactive/docs/gallery/geochart)
+
+---
 
 ## Design Philosophy
 1. [main.rs](src/main.rs)
@@ -18,7 +40,7 @@ Accuracy is known to be an issue and can be attributed to Musixmatch's incomplet
 2. [route.rs](src/route.rs)
 
    This file handles most routes and define the behavior for each one. It contains the driver `run()` as well as `collect_playlists()`,
-   
+
    which is responsible for collecting the user's playlists and their IDs to build a dropdown form in the home page.
 
 3. [sp_oauth](src/sp_oauth)
@@ -45,8 +67,15 @@ Accuracy is known to be an issue and can be attributed to Musixmatch's incomplet
    >
    > _Effects_:  Returns top search result's country information.
 
-## Built With
-+ [Actix](https://actix.rs/)
-+ [Spotify Web API](https://developer.spotify.com/documentation/web-api/)
-+ [Musixmatch API](https://developer.musixmatch.com/)
-+ [Google GeoChart](https://developers.google.com/chart/interactive/docs/gallery/geochart)
+---
+
+## Screenshots
+
+### `Login:`
+<img align="center" src="resources/login_page.png" height="50%" style="padding: 2%"/>
+
+### `Home:`
+<img align="center" src="resources/home_page.png" height="50%" style="padding: 2%"/>
+
+### `Error:`
+<img align="center" src="resources/error_page.png" height="50%" style="padding: 2%"/>

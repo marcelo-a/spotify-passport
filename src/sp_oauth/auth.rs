@@ -1,10 +1,8 @@
-// #![allow(unused_variables)]
 use std::env;
 use serde::Deserialize;
 use actix_session::Session;
 use actix_web::{
-    web, HttpResponse, Responder,
-    http::{StatusCode, header}
+    web, HttpResponse, http::{StatusCode, header}
 };
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId,
@@ -12,7 +10,6 @@ use oauth2::{
     RedirectUrl, Scope, TokenUrl, PkceCodeVerifier,
     basic::BasicClient, reqwest::http_client, TokenResponse
 };
-
 // other directories
 use crate::spotify::api::{Passport};
 

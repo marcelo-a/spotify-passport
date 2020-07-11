@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 // local crates
-// use crate::spotify::playlist::ImageObject;
 use crate::spotify::artist::ArtistObject;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]

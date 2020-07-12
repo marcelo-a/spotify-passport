@@ -1,5 +1,3 @@
 ﻿unused
-.cache-1289838511
-*.pyc
-spotify_passport/target
-spotify_passport/src/sp_oauth/example.rs
+target
+Cargo.lock

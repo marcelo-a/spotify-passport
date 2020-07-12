@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Authorization Page</title>
+    <link href="https://sp-bootstrap.global.ssl.fastly.net/8.0.0/sp-bootstrap.min.css" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style type="text/css">
+    :root {
+      background: #ffc107;
+    }
+    body {
+      padding: 15vh 5vw;
+    }
+    #login {
+      display: block;
+    }
+    #loggedin {
+      display: none;
+    }
+    .text-overflow {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 500px;
+    }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div>
+        <h1> Oops! Something went wrong! 
+          <p> To view your passport, please return to the home page and log in. </p>
+        </h1>
+        <a href="/" class="btn btn-warning" role="link">Take me back</a>
+      </div>
+    </div>
+
+    <div style="position: fixed; left: 50%; bottom: 10px; transform: translate(-50%, -50%); margin: 0 auto;">
+      <a title="Repo" href="https://github.com/marcelo-a/spotify-passport">
+        <i class="fab fa-github fa-8x" style="float:left; color: white"></i>
+      </a>
+    </div>
+
+    <!-- Your web-app is https, so your scripts need to be too -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://kit.fontawesome.com/bab8a72573.js" crossorigin="anonymous"></script>
+  </body>
+</html>
